@@ -1,5 +1,11 @@
+import Interface from "./components/Interface";
+
 function App() {
-	return <>tis app</>;
+	return (
+		<>
+			<Interface />
+		</>
+	);
 }
 
 export default App;
