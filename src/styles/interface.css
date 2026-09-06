@@ -1,0 +1,36 @@
+.messages {
+	max-width: 1200px;
+
+	.message-wrap {
+		display: flex;
+		align-items: center;
+
+		.message {
+			padding: 15px;
+			display: inline-block;
+			border-radius: 10px;
+            margin: 5px 0;
+
+            span {
+                opacity: 0.4;
+            }
+		}
+
+		&.sender {
+            justify-content: end;
+			.message {
+				margin-right: 30px;
+				color: white;
+				background-color: #7502cd;
+			}
+		}
+		&.receiver {
+            justify-content: start;
+			.message {
+				margin-left: 30px;
+				color: white;
+				background-color: #3f3e3f;
+			}
+		}
+	}
+}
