@@ -42,7 +42,7 @@ wss.on("connection", function connection(ws) {
 	ws.on("message", (data) => {
 		const parsed = JSON.parse(data.toString());
 
-		console.log("RECEIVED:", data);
+		console.log("RECEIVED:", parsed);
 
 		if (parsed.type === "identify") {
 			if (parsed.id === null) {
@@ -72,11 +72,21 @@ wss.on("connection", function connection(ws) {
 				ws.id = clientId;
 				console.log(`Client ${clientId} identified`);
 			}
+			wss.clients.forEach((client) => {
+				if (client.readyState === 1) {
+					client.send(
+						JSON.stringify({
+							type: "users",
+							users: [...clients.keys()],
+						}),
+					);
+				}
+			});
 			return;
 		} else if (parsed.type === "message") {
 			const recipient = clients.get(parsed.to);
 
-			if (recipient) {
+			if (parsed.to !== "group") {
 				const message = JSON.stringify({
 					from: ws.id,
 					to: parsed.to,
@@ -106,6 +116,16 @@ wss.on("connection", function connection(ws) {
 
 	ws.on("close", () => {
 		clients.delete(ws.id);
+		wss.clients.forEach((client) => {
+			if (client.readyState === 1) {
+				client.send(
+					JSON.stringify({
+						type: "users",
+						users: [...clients.keys()],
+					}),
+				);
+			}
+		});
 		console.log(`Client ${ws.id} disconnected`);
 	});
 });

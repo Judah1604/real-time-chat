@@ -8,11 +8,13 @@ function Interface() {
 	const [inputValue, setInputValue] = useState("");
 	const [id, setId] = useState("");
 	const [recipient, setRecipient] = useState("");
+	const [users, setUsers] = useState([]);
 
-	const possibleRecipients = ["A", "B", "group"];
+	const filteredUsers = users.filter((user) => user !== id);
+    console.log(filteredUsers)
 
 	useEffect(() => {
-		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"; // run npm run dev --host to know the address to input on your other devices to connect
 		const socket = new WebSocket(
 			`${protocol}//${window.location.hostname}:8080`,
 		);
@@ -32,10 +34,13 @@ function Interface() {
 
 		socket.onmessage = (event) => {
 			const data = JSON.parse(event.data);
+
 			if (data.type === "userid") {
 				sessionStorage.setItem("id", data.id);
 				setId(data.id);
 				console.log("ID is: " + data.id);
+			} else if (data.type === "users") {
+				setUsers(data.users);
 			} else {
 				setMessages((prevMessages) => [...prevMessages, data]);
 			}
@@ -51,12 +56,12 @@ function Interface() {
 	useEffect(() => {
 		if (!id) return;
 
-		const nextRecipient = possibleRecipients.find(
+		const nextRecipient = users.find(
 			(possibleRecipient) => possibleRecipient !== id,
 		);
 
 		setRecipient(nextRecipient);
-	}, [id]);
+	}, [id, users]);
 
 	useEffect(() => {
 		setFilteredMessages(
@@ -126,8 +131,11 @@ function Interface() {
 				/>
 				<div className="buttons">
 					<select value={recipient} onChange={handleDropdownChange}>
-						{id !== "A" && <option value="A">To A alone</option>}
-						{id !== "B" && <option value="B">To B alone</option>}
+						{filteredUsers.map((user, index) => (
+							<option value={user} key={index}>
+								To {user} alone
+							</option>
+						))}
 						<option value="group">To the group</option>
 					</select>
 					<button onClick={sendMessage}>Send</button>
