@@ -9,15 +9,15 @@
 			padding: 15px;
 			display: inline-block;
 			border-radius: 10px;
-            margin: 5px 0;
+			margin: 5px 0;
 
-            span {
-                opacity: 0.4;
-            }
+			span {
+				opacity: 0.4;
+			}
 		}
 
 		&.sender {
-            justify-content: end;
+			justify-content: end;
 			.message {
 				margin-right: 30px;
 				color: white;
@@ -25,12 +25,37 @@
 			}
 		}
 		&.receiver {
-            justify-content: start;
+			justify-content: start;
 			.message {
 				margin-left: 30px;
 				color: white;
 				background-color: #3f3e3f;
 			}
 		}
+	}
+}
+
+.form {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+
+	input {
+		font-family: inherit;
+		border: none;
+		outline: none;
+		padding: 15px;
+		border-radius: 7px;
+        background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	button {
+		font-family: inherit;
+		border: none;
+		outline: none;
+		padding: 15px 25px;
+		border-radius: 7px;
+        background-color: var(--accent-border);
 	}
 }
