@@ -37,10 +37,12 @@ const clients = new Map();
 
 wss.on("connection", function connection(ws) {
 	console.log(`Client has connected!`);
+	// console.log(clients);
 
 	ws.on("message", (data) => {
 		const parsed = JSON.parse(data.toString());
-		console.log(parsed);
+
+		console.log("RECEIVED:", data);
 
 		if (parsed.type === "identify") {
 			if (parsed.id === null) {
@@ -48,7 +50,7 @@ wss.on("connection", function connection(ws) {
 				const newId = letters[count];
 				console.log(`Assigned ${newId}`);
 				ws.id = newId;
-				clients(newId, ws);
+				clients.set(newId, ws);
 
 				ws.send(
 					JSON.stringify({
@@ -72,30 +74,22 @@ wss.on("connection", function connection(ws) {
 			}
 			return;
 		} else if (parsed.type === "message") {
-			const sender = clients.get(parsed.from);
 			const recipient = clients.get(parsed.to);
 
-			if (recipient == "B") {
-				sender.send(
-					JSON.stringify({
-						from: ws.id,
-						to: parsed.to,
-						message: parsed.message,
-					}),
-				);
-				recipient.send(
-					JSON.stringify({
-						id: ws.id,
-						to: parsed.to,
-						message: parsed.message,
-					}),
-				);
-			} else if (recipient == "group") {
+			if (recipient) {
+				const message = JSON.stringify({
+					from: ws.id,
+					to: parsed.to,
+					message: parsed.message,
+				});
+				ws.send(message);
+				recipient.send(message);
+			} else if (parsed.to == "group") {
 				wss.clients.forEach(function each(client) {
-					if (client.readyState === WebSocket.OPEN) {
+					if (client.readyState === 1) {
 						client.send(
 							JSON.stringify({
-								id: ws.id,
+								from: ws.id,
 								to: parsed.to,
 								message: parsed.message,
 							}),

@@ -7,19 +7,16 @@ function Interface() {
 	const [ws, setWs] = useState(null);
 	const [inputValue, setInputValue] = useState("");
 	const [id, setId] = useState("");
-	const [recipient, setRecipient] = useState("B");
+	const [recipient, setRecipient] = useState("");
+
+	const possibleRecipients = ["A", "B", "group"];
 
 	useEffect(() => {
-		const socket = new WebSocket("ws://192.168.154.148:8080");
-		setWs(socket);
-
-		setFilteredMessages(
-			messages.filter(
-				(message) =>
-					(message.from === id && message.to === recipient) ||
-					(message.from === recipient && message.to === id),
-			),
+		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+		const socket = new WebSocket(
+			`${protocol}//${window.location.hostname}:8080`,
 		);
+		setWs(socket);
 
 		socket.onopen = () => {
 			const savedId = sessionStorage.getItem("id");
@@ -40,10 +37,6 @@ function Interface() {
 				setId(data.id);
 				console.log("ID is: " + data.id);
 			} else {
-				const id = data.id;
-				const message = data.message;
-				console.log(id, message);
-
 				setMessages((prevMessages) => [...prevMessages, data]);
 			}
 		};
@@ -54,6 +47,27 @@ function Interface() {
 
 		return () => socket.close();
 	}, []);
+
+	useEffect(() => {
+		if (!id) return;
+
+		const nextRecipient = possibleRecipients.find(
+			(possibleRecipient) => possibleRecipient !== id,
+		);
+
+		setRecipient(nextRecipient);
+	}, [id]);
+
+	useEffect(() => {
+		setFilteredMessages(
+			messages.filter((message) =>
+				message.to === "group"
+					? recipient === "group"
+					: (message.from === id && message.to === recipient) ||
+						(message.from === recipient && message.to === id),
+			),
+		);
+	}, [messages, recipient, id]);
 
 	function handleDropdownChange(event) {
 		setRecipient(event.target.value);
@@ -91,9 +105,9 @@ function Interface() {
 			<p>Your ID is {id == "" ? "undefined" : id}</p>
 			<div className="messages">
 				{filteredMessages.map((text, index) => (
-					<div key={index} className={checkIfSender(text.id)}>
+					<div key={index} className={checkIfSender(text.from)}>
 						<p className="message">
-							<span>{text.id}: </span>
+							<span>{text.from}: </span>
 							{text.message}
 						</p>
 					</div>
@@ -110,11 +124,14 @@ function Interface() {
 						}
 					}}
 				/>
-				<select value={recipient} onChange={handleDropdownChange}>
-					<option value="B">To B alone</option>
-					<option value="group">To the group</option>
-				</select>
-				<button onClick={sendMessage}>Send</button>
+				<div className="buttons">
+					<select value={recipient} onChange={handleDropdownChange}>
+						{id !== "A" && <option value="A">To A alone</option>}
+						{id !== "B" && <option value="B">To B alone</option>}
+						<option value="group">To the group</option>
+					</select>
+					<button onClick={sendMessage}>Send</button>
+				</div>
 			</div>
 		</div>
 	);
