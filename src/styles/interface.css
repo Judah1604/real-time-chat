@@ -29,32 +29,32 @@
 			.message {
 				margin-left: 30px;
 				color: white;
-				background-color: #3f3e3f;
+				background-color: rgba(255, 255, 255, 0.1);
 			}
 		}
 	}
 }
 
 .form {
-    margin: auto;
+	margin: auto;
 	margin-top: 30px;
 	display: flex;
 	gap: 10px;
 	justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    max-width: 700px;
+	align-items: center;
+	flex-direction: column;
+	max-width: 700px;
 
-    .buttons {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
+	.buttons {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+	}
 
-    input {
-        width: -webkit-fill-available;
-    }
+	input {
+		width: -webkit-fill-available;
+	}
 
 	input,
 	select {
@@ -76,7 +76,7 @@
 		background-repeat: no-repeat;
 		background-position-x: 92%;
 		background-position-y: 12px;
-        padding-right: 40px;
+		padding-right: 40px;
 
 		option {
 			color: black;
@@ -90,5 +90,21 @@
 		padding: 15px 25px;
 		border-radius: 7px;
 		background-color: var(--accent-border);
+	}
+}
+
+@media screen and (max-width: 425px) {
+	.form,
+	.messages {
+		width: 90% !important;
+		margin: auto;
+	}
+
+	.message {
+		margin: 0 !important;
+	}
+
+	.form, .messages {
+		margin-top: 20px;
 	}
 }

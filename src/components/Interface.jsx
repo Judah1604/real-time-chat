@@ -11,7 +11,6 @@ function Interface() {
 	const [users, setUsers] = useState([]);
 
 	const filteredUsers = users.filter((user) => user !== id);
-    console.log(filteredUsers)
 
 	useEffect(() => {
 		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"; // run npm run dev --host to know the address to input on your other devices to connect
